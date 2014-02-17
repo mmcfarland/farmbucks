@@ -1,0 +1,14 @@
+
+{%extends "base.html" %}
+{% block title%}Sale Confirmed{%endblock%}
+
+{%block content%}
+<h2 class="page-title">{{merchant.name}}</h2>
+<h3 class="page-subtitle">Sale Confirmed</h3>
+{{ transaction.id }}
+{{ transaction.customer.username}}
+${{ transaction.amount }}
+{{transaction.description}}
+{{transaction.timestamp}}
+
+{% endblock %}

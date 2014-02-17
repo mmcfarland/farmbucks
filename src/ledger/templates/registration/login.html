@@ -1,0 +1,63 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Login" %}{% endblock %}
+{% block content %}
+{% url 'auth_password_reset' as auth_pwd_reset_url %}
+{% url 'registration_register' as register_url%}
+
+
+<div class="row">
+        <div class="col-md-4 col-md-offset-4">
+
+            {% if form.errors %}
+            <p>{% blocktrans %}Your username and password didn't match. Please try again.{% endblocktrans %}</p>
+            {% endif %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please sign in</h3>
+                </div>
+                <div class="panel-body">
+                    <form accept-charset="UTF-8" role="form" method="post" action="{% url 'auth_login' %}">
+                        {% csrf_token %}
+
+                    <fieldset>
+                        <div class="form-group">
+                            {{ form.username }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password }}
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input name="remember" type="checkbox" value="Remember Me"> Remember Me
+                            </label>
+                        </div>
+                        <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+                    </fieldset>
+
+                    <p>{% blocktrans %}<a href="{{ auth_pwd_reset_url }}">Forgot</a> your password?
+                        <a href="{{ register_url }}">Need an account</a>?{% endblocktrans %}</p>
+
+                    <input type="hidden" name="next" value="{{ next }}" />
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function() {
+        $('input[type="text"]').addClass('form-control')
+            .attr('placeholder', 'Username');
+        $('input[type="password"]').addClass('form-control')
+            .attr('placeholder', 'Password');
+        $('input[name="username"]').focus();
+        $('ul.errorlist').addClass('alert alert-error');
+    }());
+</script>
+{% endblock scripts %}

@@ -1,0 +1,13 @@
+{%extends "base.html" %}
+{% block title%}Sale Denied{%endblock%}
+
+{%block content%}
+<h2 class="page-title">{{merchant.name}}</h2>
+<h3 class="page-subtitle error">Sale Denied</h3>
+
+{{ customer.username}}
+${{ available}}
+${{ amount }}
+
+{{reason}}
+{% endblock %}
