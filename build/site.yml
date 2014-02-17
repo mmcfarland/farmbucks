@@ -1,0 +1,34 @@
+- hosts: main
+  tasks: 
+    - name: update apt
+      apt: update_cache=yes
+
+    - name: Essentials
+      apt: pkg=$item state=latest
+      with_items:
+        - python-software-properties
+        - python-setuptools
+        - wget
+        - vim
+        - zip
+        - zsh
+
+    - name: Install git
+      apt: pkg=git state=latest
+
+    - name: Install pip
+      easy_install: name=pip
+
+    - name: Install virtual env
+      pip: name=virtualenv
+           version=1.8.4
+
+    - name: Install nginx
+      action: apt name=nginx
+
+    - name: Install postgres 9.1
+      apt: pkg=postgresql state=latest
+
+    - name: Install postgres 9.1 (dev)
+      apt: pkg=postgresql-server-dev-9.1 state=latest
+

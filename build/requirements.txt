@@ -1,0 +1,8 @@
+django==1.6
+south
+psycopg2
+django-reversion==1.8
+git+https://github.com/azavea/django-registration.git
+django-registration-defaults
+gunicorn 
+django-model-utils
