@@ -27,6 +27,9 @@ class Merchant(models.Model):
         balance = Transaction.query.by_user(self, customer).aggregate(Sum('amount'))
         return balance.get('amount__sum')
 
+    def has_customer(self, customer):
+        return self.account_holders.filter(user=customer).exists()
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -54,10 +57,15 @@ class TransactionQuerySet(QuerySet):
 
 
 class Transaction(models.Model):
+    DEBIT = 'debit'
+    CREDIT = 'credit'
+    TRANSACTION_TYPES = ((DEBIT, 'Debit'), (CREDIT, 'Credit'))
+
     timestamp = models.DateTimeField(auto_now_add=True)
     merchant = models.ForeignKey(Merchant)
     user = models.ForeignKey(User)
     amount = models.FloatField()
+    type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
     description = models.TextField()
 
     query = PassThroughManager.for_queryset_class(TransactionQuerySet)()

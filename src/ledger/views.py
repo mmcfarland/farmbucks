@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.shortcuts import render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, Context, Template
@@ -17,25 +16,6 @@ def route(**kwargs):
 
 def home(req):
     return render_to_response('home.html', {}, RequestContext(req))    
-
-@login_required
-def account_status(req, merchant, username):
-    if req.user.username != username:
-        return HttpResponse('Unauthorized', status=401)
-
-    merch = Merchant.query.by_slug(merchant)
-    print merch
-
-    # TODO: if user is not part of merchant account, bail
-
-    trans = Transaction.query.by_user(merch, req.user) 
-    print trans
-
-    ctx = { 
-             'transactions': trans
-         } 
-
-    return render_to_response('account_status.html', ctx, RequestContext(req))
 
 
 def user_is_merchant(user, merchant):
@@ -81,9 +61,10 @@ def make_sale(req, merchant):
             return HttpResponse("Transaction amount must be a positive number")
 
         trans = Transaction(
+                type=Transaction.DEBIT,
                 merchant=merch,
                 user=customer,
-                amount=amount,
+                amount=-amount,
                 description=desc)
 
         trans.save()
@@ -114,4 +95,41 @@ def sale_detail(req, merchant, transaction_id):
 
     return HttpResponse('Unauthorized', status=401)
 
+
+@login_required
+def customer_history(req, merchant, username):
+    merch = Merchant.query.by_slug(merchant).first()
+    customer = User.objects.get(username=username) 
+    user_merch = req.user.merchant_accounts.first()
+
+    if req.user.id == customer.id \
+        or (user_merch != None and merch.id == user_merch.id and merch.has_customer(customer)):
+
+            trans = Transaction.query.by_user(merch, customer).order_by('-timestamp')
+            balance = merch.customer_balance(customer)
+
+            ctx = { 
+                    'transactions': trans,
+                    'customer': customer,
+                    'balance': balance,
+                    'merchant': merch
+            }
+            return render_to_response('customer-history.html', ctx, RequestContext(req))
+
+    return HttpResponse('Unauthorized', status=401)
+
+
+@login_required
+def customer_credit(req, merchant_name, customer_name):
+    merch = user_is_merchant(req.user, merchant_name)
+    customer = get_object_or_404(User, username=customer_name)
+    balance = merch.customer_balance(customer)
+
+    ctx = {
+            'merchant': merch,
+            'customer': customer,
+            'balance': balance
+    }
+
+    return render_to_response('customer-add-credit.html', ctx, RequestContext(req))
 
