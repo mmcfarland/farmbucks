@@ -55,6 +55,11 @@ class TransactionQuerySet(QuerySet):
     def by_user(self, merchant, user):
         return self.filter(user=user).for_merchant(merchant)
 
+    def by_type(self, trans_type):
+        return self.filter(type=trans_type)
+
+    def since(self, when):
+        return self.filter(timestamp__gte=when)
 
 class Transaction(models.Model):
     DEBIT = 'debit'

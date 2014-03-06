@@ -1,0 +1,23 @@
+{%extends "base.html" %}
+{%block content%}
+<h1>{{merchant.name}} Admin</h1>
+<hr/>
+
+<h4>Quick Stats</h4>
+<table class="table">
+    <tr>
+        <td>Registered Users</td>
+        <td>{{merchant.account_holders.count}}</td>
+    </tr>
+    <tr>
+        <td>Sales YTD</td>
+        <td>${{ytd_sales}}</td>
+    </tr>
+</table>
+
+<a href="/{{merchant.slug}}/sale/" class="btn btn-lg btn-default">
+    <span class="glyphicon glyphicon-usd"></span>Sales Register</a>
+
+{% include "account-list.html" %}
+
+{%endblock content%}

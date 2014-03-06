@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, Context, Template
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.db.models import Sum
+
+from datetime import date
 
 from ledger.models import Transaction, Merchant
 
@@ -16,6 +19,23 @@ def route(**kwargs):
 
 def home(req):
     return render_to_response('home.html', {}, RequestContext(req))    
+
+
+@login_required
+def merchant_home(req, merchant_name):
+    merch = user_is_merchant(req.user, merchant_name)
+    sales = Transaction.query \
+                .for_merchant(merch) \
+                .by_type(Transaction.CREDIT) \
+                .since(date(date.today().year, 1,1)) \
+                .aggregate(Sum('amount'))
+
+    ctx = {
+        'merchant': merch,
+        'ytd_sales': sales.get('amount__sum'),
+        'accounts': merch.account_holders.all()
+    }
+    return render_to_response('merch_home.html', ctx, RequestContext(req))    
 
 
 def user_is_merchant(user, merchant):

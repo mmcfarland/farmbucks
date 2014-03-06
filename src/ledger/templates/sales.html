@@ -10,13 +10,10 @@
         <form accept-charset="UTF-8" role="form" method="post">
             {% csrf_token %}
 
-        <select name="customer" class="form-control">
-            <option value="-1">Select a customer</option>
-            {% for account in accounts %}
-                <option value="{{account.user.username}}">{{account.user.username}}</option>
-            {% endfor %}
-        </select>
         <hr/>
+
+        {% include "account-list.html" %}
+
         <h4>Enter Sales Information</h4>
         <fieldset>
             <div class="form-group input-group">

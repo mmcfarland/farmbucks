@@ -19,7 +19,9 @@ urlpatterns = patterns('',
     url(r'^(?P<merchant>\w+)/sale/$', 
         route(GET=merchant_transaction, POST=make_sale)),
 
+    url(r'^(?P<merchant_name>\w+)/$', 
+        route(GET=merchant_home)),
+
     url(r'^(?P<merchant>\w+)/sale/(?P<transaction_id>\d+)/$', route(GET=sale_detail)),
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('registration.backends.default.urls'))
 )
