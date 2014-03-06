@@ -133,3 +133,22 @@ def customer_credit(req, merchant_name, customer_name):
 
     return render_to_response('customer-add-credit.html', ctx, RequestContext(req))
 
+@login_required
+def add_funds(req, merchant_name, customer_name):
+
+    merch = user_is_merchant(req.user, merchant_name)
+
+    amount = float(req.POST['amount'])
+    desc = '(Manually Entered)' +  req.POST['description']
+    customer = get_object_or_404(User, username=customer_name)
+
+    trans = Transaction(
+            type=Transaction.CREDIT,
+            merchant=merch,
+            user=customer,
+            amount=amount,
+            description=desc)
+
+    trans.save()
+
+    return HttpResponseRedirect('/%s/sale/%d/' % (merch, trans.id))
