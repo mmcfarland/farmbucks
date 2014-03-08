@@ -15,9 +15,43 @@
     </tr>
 </table>
 
-<a href="/{{merchant.slug}}/sale/" class="btn btn-lg btn-default">
-    <span class="glyphicon glyphicon-usd"></span>Sales Register</a>
-
+<label>Customer Tools</label>
 {% include "account-list.html" %}
-
+<div class="row">
+    <div class="col-md-6">
+        <a id="funds" href="javascript:;" disabled=disabled class="action btn btn-large btn-success btn-block">
+            <span class="glyphicon glyphicon-usd"></span>Add Funds
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="history" href="javascript:;" disabled=disabled class="action btn btn-large btn-primary btn-block">
+            <span class="glyphicon glyphicon-info-sign"></span>Account History
+        </a>
+    </div>
+</div>
 {%endblock content%}
+
+{% block scripts %}
+<script type="text/javascript">
+    var $cust = $('[name=customer]');
+
+    $cust.change(function() {
+        var val = +$(this).val();
+        if (val != -1) {
+            $('.action').attr('disabled', false);
+        } else {
+            $('.action').attr('disabled', true);
+        }
+    });
+
+    var action = function(res) {
+        return function() {
+            document.location.href = document.location.href + $cust.val() + '/' + res;
+        }
+    }
+
+    $('#funds').click(action('credit'));
+    $('#history').click(action('history'));
+
+</script>
+{% endblock scripts %}
